@@ -32,7 +32,7 @@ namespace API
             {
                 cors.AddPolicy("CorsPolicy", opt =>
                 {
-                    opt.AllowAnyOrigin();
+                    opt.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 });
             });
             // services.AddCors(options =>
