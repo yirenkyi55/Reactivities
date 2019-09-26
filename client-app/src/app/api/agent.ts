@@ -38,7 +38,7 @@ const requests = {
 
 const Activities = {
   list: (): Promise<IActivity[]> => requests.get("/activities"),
-  details: (id: String): Promise<IActivity> =>
+  details: (id: string): Promise<IActivity> =>
     requests.get(`/activities/${id}`),
   create: (activity: IActivity) => requests.post(`/activities`, activity),
   update: (activity: IActivity) =>

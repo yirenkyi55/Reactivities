@@ -5,6 +5,7 @@ using Application.Activities;
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
@@ -14,8 +15,11 @@ namespace API.Controllers
     {
         private readonly IMediator _mediator;
 
-        public ActivitiesController(IMediator mediator)
+        private readonly ILogger<ActivitiesController> _logger;
+
+        public ActivitiesController(IMediator mediator, ILogger<ActivitiesController> logger)
         {
+            _logger = logger;
             _mediator = mediator;
         }
 
@@ -47,7 +51,7 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
-
+            _logger.LogInformation($"Activity id {id}");
             return await _mediator.Send(new Delete.Command { Id = id });
         }
     }
