@@ -1,26 +1,42 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Card, Image, Button } from "semantic-ui-react";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router-dom";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { Link } from "react-router-dom";
+interface IDetailsParam {
+  id: string;
+}
 
-const ActivityDetails: React.FC = () => {
-  const { selectedActivity, openEditForm, cancelSelectedActivity } = useContext(
-    ActivityStore
-  );
+const ActivityDetails: React.FC<RouteComponentProps<IDetailsParam>> = ({
+  match,
+  history
+}) => {
+  const { activity, loadActivity, loadingInitial } = useContext(ActivityStore);
+
+  useEffect(() => {
+    //Get the id of the selected activity from match.prams.id
+    loadActivity(match.params.id);
+  }, [loadActivity, match.params.id]);
+
+  if (loadingInitial || !activity) {
+    return <LoadingComponent content="Loading activity..." />;
+  }
 
   return (
     <Card fluid>
       <Image
-        src={`/assets/categoryImages/${selectedActivity.category}.jpg`}
+        src={`/assets/categoryImages/${activity.category}.jpg`}
         wrapped
         ui={false}
       />
       <Card.Content>
-        <Card.Header>{selectedActivity!.title}</Card.Header>
+        <Card.Header>{activity!.title}</Card.Header>
         <Card.Meta>
-          <span>{selectedActivity!.date}</span>
+          <span>{activity!.date}</span>
         </Card.Meta>
-        <Card.Description>{selectedActivity!.description}</Card.Description>
+        <Card.Description>{activity!.description}</Card.Description>
       </Card.Content>
       <Card.Content extra>
         <Button.Group widths={2}>
@@ -28,13 +44,14 @@ const ActivityDetails: React.FC = () => {
             basic
             color="blue"
             content="Edit"
-            onClick={() => openEditForm(selectedActivity!.id)}
+            as={Link}
+            to={`/manage/${activity!.id}`}
           />
           <Button
             basic
             color="grey"
             content="Cancel"
-            onClick={() => cancelSelectedActivity()}
+            onClick={() => history.push("/activities")}
           />
         </Button.Group>
       </Card.Content>

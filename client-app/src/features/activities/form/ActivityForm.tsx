@@ -1,63 +1,79 @@
-import React, { useState, FormEvent, useContext } from "react";
+import React, { useState, FormEvent, useContext, useEffect } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 import uuid from "uuid/v4";
 import ActivityStore from "../../../app/stores/activityStore";
 import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router-dom";
 
-const ActivityForm: React.FC = () => {
+interface IDetailsParam {
+  id: string;
+}
+
+const ActivityForm: React.FC<RouteComponentProps<IDetailsParam>> = ({
+  match,
+  history
+}) => {
+  const [activity, setActivity] = useState<IActivity>({
+    id: "",
+    title: "",
+    description: "",
+    category: "",
+    date: "",
+    city: "",
+    venue: ""
+  });
+
   const activityStore = useContext(ActivityStore);
+
   const {
     createActivity,
     editActivity,
     submitting,
-    selectedActivity,
-    cancelFormOpen
+    activity: selectedActivity,
+    loadActivity,
+    clearActivity
   } = activityStore;
 
-  const initializeForm = () => {
-    if (selectedActivity) {
-      return selectedActivity;
-    } else {
-      return {
-        id: "",
-        title: "",
-        description: "",
-        category: "",
-        date: "",
-        city: "",
-        venue: ""
-      };
+  useEffect(() => {
+    if (match.params.id && activity.id.length === 0) {
+      loadActivity(match.params.id).then(
+        () => selectedActivity && setActivity(selectedActivity)
+      );
     }
-  };
 
-  const [activity, setActivity] = useState<IActivity>(initializeForm);
-  const [inputChange, setInputChange] = useState(false);
+    return () => {
+      clearActivity();
+    };
+  }, [
+    loadActivity,
+    clearActivity,
+    match.params.id,
+    selectedActivity,
+    activity.id.length
+  ]);
 
   const handleInputChange = (
     event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.currentTarget;
     setActivity({ ...activity, [name]: value });
-    setInputChange(true);
   };
 
   const handleSubmit = () => {
+    //[1,2,3,4,5,6]
+
     if (activity.id.length === 0) {
-      console.log(activity);
       //create a new activity
-      let newActivity = { ...activity, id: uuid() };
-      createActivity(newActivity);
+      let newActivity: IActivity = { ...activity, id: uuid() };
+      createActivity(newActivity).then(() =>
+        history.push(`/activities/${newActivity.id}`)
+      );
     } else {
-      if (!inputChange) {
-        let oactivity: IActivity = { ...activity };
-        //edit an existing activity
-        console.log(oactivity);
-        editActivity(oactivity);
-      } else {
-        //edit an existing activity
-        editActivity(activity);
-      }
+      //edit an existing activity
+      editActivity(activity).then(() =>
+        history.push(`/activities/${activity.id}`)
+      );
     }
   };
 
@@ -112,7 +128,7 @@ const ActivityForm: React.FC = () => {
         <Button
           floated="right"
           content="Cancel"
-          onClick={() => cancelFormOpen}
+          onClick={() => history.push("/activities")}
         />
       </Form>
     </Segment>

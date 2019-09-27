@@ -29,7 +29,7 @@ const requests = {
       .then(sleep(1000))
       .then(responseBody),
 
-  delete: url =>
+  delete: (url: string) =>
     axios
       .delete(url)
       .then(sleep(1000))

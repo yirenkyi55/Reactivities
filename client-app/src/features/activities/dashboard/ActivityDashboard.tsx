@@ -1,15 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid } from "semantic-ui-react";
-
 import ActivityList from "./ActivityList";
-import ActivityDetails from "../details/ActivityDetails";
-import ActivityForm from "../form/ActivityForm";
 import { observer } from "mobx-react-lite";
 import ActivityStore from "../../../app/stores/activityStore";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
 const ActivityDashboard: React.FC = () => {
   const activityStore = useContext(ActivityStore);
-  const { editMode, selectedActivity } = activityStore;
+
+  //adding [] as a second parameter to useEffect ensures it runs only once when our component get mount.
+  useEffect(() => {
+    activityStore.loadActivities();
+  }, [activityStore]);
+
+  if (activityStore.loadingInitial) {
+    return <LoadingComponent content="Loading activities..." />;
+  }
 
   return (
     <Grid>
@@ -18,11 +24,7 @@ const ActivityDashboard: React.FC = () => {
       </Grid.Column>
 
       <Grid.Column width={6}>
-        {// If we are not in editMode and activity is selected then show the details component
-        selectedActivity && !editMode && <ActivityDetails />}
-        {// If we are in edit mode then show the activity form..
-        //Give the activity form a key so that when the key changes we can re-render it..
-        editMode && <ActivityForm />}
+        <h2>Activity Filters</h2>
       </Grid.Column>
     </Grid>
   );
