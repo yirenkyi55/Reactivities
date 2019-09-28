@@ -11,11 +11,31 @@ class ActivityStore {
   @observable submitting = false;
   @observable target = "";
 
-  @computed get activitiesByDate(): IActivity[] {
-    return Array.from(this.activityRegistry.values()).sort((a, b) => {
+  @computed get activitiesByDate() {
+    return this.groupActivitiesByDate(
+      Array.from(this.activityRegistry.values())
+    );
+  }
+
+  groupActivitiesByDate = (activities: IActivity[]) => {
+    const sortedActivities = activities.sort((a, b) => {
       return Date.parse(a.date) - Date.parse(b.date);
     });
-  }
+
+    return Object.entries(
+      sortedActivities.reduce(
+        (activities, activity) => {
+          //Get the date for the activity
+          const date = activity.date.split("T")[0]; //Split the date by time and take the date
+          activities[date] = activities[date]
+            ? [...activities[date], activity]
+            : [activity];
+          return activities;
+        },
+        {} as { [key: string]: IActivity[] }
+      )
+    );
+  };
 
   @action loadActivities = async () => {
     this.loadingInitial = true;
@@ -115,7 +135,6 @@ class ActivityStore {
       runInAction("delete activity errorr", () => {
         this.submitting = false;
         this.target = "";
-        console.log(error);
       });
     }
   };
