@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import { Segment, Header, Form, Button, Comment } from "semantic-ui-react";
+import React, { Fragment } from 'react';
+import { Segment, Header, Form, Button, Comment } from 'semantic-ui-react';
 
 const ActivityDetailedChat = () => {
   return (
@@ -9,7 +9,7 @@ const ActivityDetailedChat = () => {
         attached="top"
         inverted
         color="teal"
-        style={{ border: "none" }}
+        style={{ border: 'none' }}
       >
         <Header>Chat about this event</Header>
       </Segment>

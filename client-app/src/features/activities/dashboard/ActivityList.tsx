@@ -1,8 +1,8 @@
-import React, { useContext, Fragment } from "react";
-import { Item, Label } from "semantic-ui-react";
-import ActivityStore from "../../../app/stores/activityStore";
-import { observer } from "mobx-react-lite";
-import ActivityListItem from "./ActivityListItem";
+import React, { useContext, Fragment } from 'react';
+import { Item, Label } from 'semantic-ui-react';
+import ActivityStore from '../../../app/stores/activityStore';
+import { observer } from 'mobx-react-lite';
+import ActivityListItem from './ActivityListItem';
 
 const ActivityList: React.FC = () => {
   const activityStore = useContext(ActivityStore);

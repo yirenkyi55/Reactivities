@@ -1,35 +1,37 @@
-import axios, { AxiosResponse } from "axios";
-import { IActivity } from "../models/activity";
-import { history } from "../..";
-import { toast } from "react-toastify";
+import axios, { AxiosResponse } from 'axios';
+import { IActivity } from '../models/activity';
+import { history } from '../..';
+import { toast } from 'react-toastify';
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = 'http://localhost:5000/api';
 
 axios.interceptors.response.use(undefined, error => {
   // console.log(JSON.stringify(error));
 
-  if (error.message === "Network Error" && !error.response) {
-    toast.error("Network error - make sure API is running!");
+  if (error.message === 'Network Error' && !error.response) {
+    toast.error('Network error - make sure API is running!');
   }
 
   const { status, data, config } = error.response;
 
   if (status === 404) {
-    history.push("/notfound");
+    history.push('/notfound');
   }
 
-  //check if the status is 400, is a get request and has and id property on the data
+  //check if the status is 400, is a get request and has an id property on the data
   if (
     status === 400 &&
-    config.method === "get" &&
-    data.errors.hasOwnProperty("id")
+    config.method === 'get' &&
+    data.errors.hasOwnProperty('id')
   ) {
-    history.push("/notfound");
+    history.push('/notfound');
   }
 
   if (status === 500) {
-    toast.error("Server error! Please check the console for more info");
+    toast.error('Server error! Please check the console for more info');
   }
+
+  throw error;
 });
 
 const responseBody = (response: AxiosResponse) => response.data;
@@ -66,7 +68,7 @@ const requests = {
 };
 
 const Activities = {
-  list: (): Promise<IActivity[]> => requests.get("/activities"),
+  list: (): Promise<IActivity[]> => requests.get('/activities'),
   details: (id: string): Promise<IActivity> =>
     requests.get(`/activities/${id}`),
   create: (activity: IActivity) => requests.post(`/activities`, activity),
